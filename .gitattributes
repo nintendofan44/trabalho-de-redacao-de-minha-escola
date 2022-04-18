@@ -1,2 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+verao.ogg filter=lfs diff=lfs merge=lfs -text
+verao.mp3 filter=lfs diff=lfs merge=lfs -text
+outono.ogg filter=lfs diff=lfs merge=lfs -text
+outono.mp3 filter=lfs diff=lfs merge=lfs -text
+inverno.ogg filter=lfs diff=lfs merge=lfs -text
+inverno.mp3 filter=lfs diff=lfs merge=lfs -text
+primavera.ogg filter=lfs diff=lfs merge=lfs -text
+primavera.mp3 filter=lfs diff=lfs merge=lfs -text
