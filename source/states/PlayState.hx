@@ -95,6 +95,7 @@ class PlayState extends MusicBeatState {
 	var grupoTexto:FlxTypedGroup<TextoInstantanio>;
 
 	var mudandoEstacao:Bool = false;
+	var fastFowardEnabled:Bool = false;
 	var ciclos:Int = 0; // Lord X !!!1!!1!1!11!1!1111!11!!!111
 
 	var solL:Float = 0.0;
@@ -244,7 +245,7 @@ class PlayState extends MusicBeatState {
 				var valor2:Int = valor ? 1 : 0;
 				var multiplicador:Int = 35;
 
-				if (FlxG.keys.pressed.ENTER)
+				if (FlxG.keys.pressed.ENTER && fastFowardEnabled)
 					multiplicador = 200;
 				else
 					multiplicador = 35;
