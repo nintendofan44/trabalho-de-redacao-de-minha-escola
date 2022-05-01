@@ -43,12 +43,15 @@ class CustomFadeTransition extends MusicBeatSubstate {
 		transBlack.x = transGradient.x;
 
 		if(isTransIn) {
+			FlxG.camera.zoom = 3;
+			FlxG.camera.angle = 179;
 			transGradient.y = transBlack.y - transBlack.height;
 			FlxTween.tween(transGradient, {y: transGradient.height + 50}, duration, {
 				onComplete: function(twn:FlxTween) {
 					close();
 				},
 			ease: FlxEase.linear});
+			FlxTween.tween(FlxG.camera, {zoom: 1, angle: 0}, 1.1, {ease: FlxEase.expoInOut});
 		} else {
 			transGradient.y = -transGradient.height;
 			transBlack.y = transGradient.y - transBlack.height + 50;
@@ -59,6 +62,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 					}
 				},
 			ease: FlxEase.linear});
+			FlxTween.tween(FlxG.camera, {zoom: 3, angle: 179}, 1.1, {ease: FlxEase.expoInOut});
 		}
 
 		if(nextCamera != null) {

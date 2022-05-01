@@ -1,5 +1,9 @@
 package states;
 
+import ajudas.Org;
+import ajudas.Org.TextoInstantanio;
+import ajudas.Org.SpriteInstantania;
+import objetos.FlxTextConectado;
 import interface_.CustomFadeTransition;
 import flixel.effects.particles.FlxEmitter.FlxTypedEmitter;
 import flixel.addons.transition.FlxTransitionSprite;
@@ -69,6 +73,7 @@ class PlayState extends MusicBeatState {
 	var dividir:Float = 400;
 
 	public var spriteMap:Map<String, SpriteInstantania> = new Map<String, SpriteInstantania>();
+	public var textMap:Map<String, TextoInstantanio> = new Map<String, TextoInstantanio>();
 
 	var shadersCameraPrincipal:Array<ShaderEffect> = [];
 	var shadersCameraPrincipal2:Array<ShaderEffect> = [];
@@ -77,9 +82,17 @@ class PlayState extends MusicBeatState {
 	var gameHeight:Int = 720;
 	var zoom:Float = -1;
 
+	var descricoes:Array<String> = [
+		'O verão caracteriza-se por elevadas temperaturas. \nSuas principais características são as elevadas temperaturas e o aumento dos índices pluviométricos.',
+		'No outono, os ventos aumentam e ficam mais fortes gradativamente. \nComo o outono antecede o inverno, é comum também haver quedas de temperaturas constantes. \nSe há queda nas temperaturas, também há a diminuição da umidade do ar. \nGeadas e neve podem ser também comuns nessa estação do ano.',
+		'O inverno caracteriza-se pelo seu frio extremo. Além disso, é bastante comum a presença de geadas e nevascas. \nQuando a temperatura das nuvens está abaixo de 0 Celsius (32 Fahrenheit), o vapor de água se condensa, \ndando origens a cristais de gelo, que caem em forma de neve.',
+		'A primavera caracteriza-se por apresentar dias com temperaturas amenas, \nalém disso, em algumas regiões, também ocorre a floração de diversas plantas. \nA primavera inicia-se logo após o inverno e encerra-se dando início ao verão.',
+	];
+
 	var grupoPlanoDeFundo:FlxTypedGroup<FlxSprite>;
 	var grupoParticulas:FlxTypedGroup<FlxEmitter>;
 	var grupoPlanoDeFundo2:FlxTypedGroup<FlxSprite>;
+	var grupoTexto:FlxTypedGroup<TextoInstantanio>;
 
 	var mudandoEstacao:Bool = false;
 	var ciclos:Int = 0; // Lord X !!!1!!1!1!11!1!1111!11!!!111
@@ -134,6 +147,7 @@ class PlayState extends MusicBeatState {
 		grupoPlanoDeFundo = new FlxTypedGroup<FlxSprite>();
 		grupoParticulas = new FlxTypedGroup<FlxEmitter>();
 		grupoPlanoDeFundo2 = new FlxTypedGroup<FlxSprite>();
+		grupoTexto = new FlxTypedGroup<TextoInstantanio>();
 
 		ceu = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.fromRGB(0, 166, 255));
 		ceu.screenCenter();
@@ -178,18 +192,25 @@ class PlayState extends MusicBeatState {
 		}
 
 		for (i in 0...2) {
-			grupoPlanoDeFundo.add(adicionarImagemComRetorno('passaro' + i, '$pasta/geral/passaro', 0, (FlxG.height / 4) + (10 + solA), true));
-			momentoAmendoim('passaro' + i).scale.set(0.25, 0.25);
-			momentoAmendoim('passaro' + i).updateHitbox();
+			grupoPlanoDeFundo2.add(Org.adicionarImagemComRetorno('passaro' + i, '$pasta/geral/passaro', 0, (FlxG.height / 4) + (10 + solA), true));
+			Org.editarSprite('passaro' + i).scale.set(0.25, 0.25);
+			Org.editarSprite('passaro' + i).updateHitbox();
 			if (i > -1 && i > 0) {
-				momentoAmendoim('passaro' + i).x += momentoAmendoim('passaro' + i).width * i + 10;
-				momentoAmendoim('passaro' + i).y += momentoAmendoim('passaro' + i).height * i + 10;
+				Org.editarSprite('passaro' + i).x += Org.editarSprite('passaro' + i).width * i + 10;
+				Org.editarSprite('passaro' + i).y += Org.editarSprite('passaro' + i).height * i + 10;
 			}
 		}
+
+		grupoTexto.add(Org.adicionarPalavrasComRetorno('descrição', 0, 0, FlxG.width, descricoes[0], 16));
+		Org.editarTexto('descrição').setFormat(AssetPaths.font("Days.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		Org.editarTexto('descrição').updateHitbox();
+		Org.editarTexto('descrição').screenCenter();
+		Org.editarTexto('descrição').y += Org.editarTexto('descrição').height * 4;
 
 		add(grupoPlanoDeFundo);
 		add(grupoParticulas);
 		add(grupoPlanoDeFundo2);
+		add(grupoTexto);
 
 		FlxG.worldBounds.set(gameWidth / 2, gameHeight / 2, gameWidth, gameHeight);
 
@@ -222,7 +243,13 @@ class PlayState extends MusicBeatState {
 
 				var valor2:Int = valor ? 1 : 0;
 				var multiplicador:Int = 35;
-				momentoAmendoim('passaro' + i).x += (elapsed * multiplicador) * ((i + valor2) / 2);
+
+				if (FlxG.keys.pressed.ENTER)
+					multiplicador = 200;
+				else
+					multiplicador = 35;
+
+				Org.editarSprite('passaro' + i).x += (elapsed * multiplicador) * ((i + valor2) / 2);
 			}
 
 			for (i in 0...2) {
@@ -234,18 +261,18 @@ class PlayState extends MusicBeatState {
 
 					var valor2:Int = valor ? 1 : 0; */
 
-				if (momentoAmendoim('passaro' + i).x > FlxG.width + 50) {
+				if (Org.editarSprite('passaro' + i).x > FlxG.width + 50) {
 					ciclos++;
 					trace(ciclos);
 
 					if (ciclos == 2)
-						mudarEstacao('outono');
+						mudarEstacao('outono', 1);
 					if (ciclos == 4)
-						mudarEstacao('inverno');
+						mudarEstacao('inverno', 2);
 					if (ciclos == 6)
-						mudarEstacao('primavera');
+						mudarEstacao('primavera', 3);
 					/*if (ciclos == 8) {
-						mudarEstacao('verao');
+						mudarEstacao('verao', 0);
 						ciclos = 0;
 					}*/ // se eu um dia quiser fazer um loop
 					if (ciclos == 8) {
@@ -259,14 +286,16 @@ class PlayState extends MusicBeatState {
 						FlxTween.tween(creditos, {alpha: 1}, 1, {ease: FlxEase.smootherStepIn});
 					}
 
-					momentoAmendoim('passaro' + i).kill();
-					momentoAmendoim('passaro' + i).foiAdicionada = false;
-					grupoPlanoDeFundo2.add(adicionarImagemComRetorno('passaro' + i, '$pasta/geral/passaro', 0, (FlxG.height / 4) + (10 + solA), true));
-					momentoAmendoim('passaro' + i).scale.set(0.25, 0.25);
-					momentoAmendoim('passaro' + i).updateHitbox();
+					Org.editarSprite('passaro' + i).kill();
+					Org.editarSprite('passaro' + i).foiAdicionada = false;
+					grupoPlanoDeFundo2.add(Org.adicionarImagemComRetorno('passaro' + i, '$pasta/geral/passaro', 0, (FlxG.height / 4) + (10 + solA), true));
+					Org.editarSprite('passaro' + i).alpha = 0;
+					Org.editarSprite('passaro' + i).scale.set(0.25, 0.25);
+					Org.editarSprite('passaro' + i).updateHitbox();
 					if (i > -1 && i > 0) {
-						momentoAmendoim('passaro' + i).x += momentoAmendoim('passaro' + i).width * i + 10;
-						momentoAmendoim('passaro' + i).y += momentoAmendoim('passaro' + i).height * i + 10;
+						Org.editarSprite('passaro' + i).x += Org.editarSprite('passaro' + i).width * i + 10;
+						Org.editarSprite('passaro' + i).y += Org.editarSprite('passaro' + i).height * i + 10;
+						FlxTween.tween(Org.editarSprite('passaro' + i), {alpha: 1}, 1, {ease: FlxEase.quartInOut});
 					}
 				}
 			}
@@ -286,10 +315,16 @@ class PlayState extends MusicBeatState {
 		}
 
 		if (close) {
-			FlxTween.tween(sol, {x: -200, y: -200, angle: 270}, 1.5, {ease: FlxEase.cubeInOut});
-			new FlxTimer().start(0.95, function(tmr:FlxTimer) {
+			if (ciclos != 8) {
+				FlxTween.tween(sol, {x: -200, y: -200, angle: 270}, 1.5, {ease: FlxEase.cubeInOut});
+				new FlxTimer().start(0.95, function(tmr:FlxTimer) {
+					//FlxTween.tween(FlxG.camera, {zoom: 3, angle: 179}, 1.1, {ease: FlxEase.expoInOut});
+					MusicBeatState.switchState(new TitleScreen());
+				});
+			} else {
+				//FlxTween.tween(FlxG.camera, {zoom: 3, angle: 179}, 1.1, {ease: FlxEase.expoInOut});
 				MusicBeatState.switchState(new TitleScreen());
-			});
+			}
 		}
 	}
 
@@ -388,73 +423,7 @@ class PlayState extends MusicBeatState {
 		}
 	}
 
-	function adicionarImagem(tag:String, imagem:String, x:Float, y:Float, antialiasing:Bool) {
-		tag = tag.replace('.', '');
-		resetarTagDeSprite(tag);
-		var dolly:SpriteInstantania = new SpriteInstantania(x, y, antialiasing);
-		if (imagem != null && imagem.length > 0) {
-			dolly.loadGraphic(AssetPaths.image(imagem));
-		}
-		dolly.antialiasing = antialiasing;
-		PlayState.instance.spriteMap.set(tag, dolly);
-		dolly.active = true;
-
-		adicionar(tag);
-	}
-
-	function adicionarImagemComRetorno(tag:String, imagem:String, x:Float, y:Float, antialiasing:Bool):SpriteInstantania {
-		tag = tag.replace('.', '');
-		resetarTagDeSprite(tag);
-		var dolly:SpriteInstantania = new SpriteInstantania(x, y, antialiasing);
-		if (imagem != null && imagem.length > 0) {
-			dolly.loadGraphic(AssetPaths.image(imagem));
-		}
-		dolly.antialiasing = antialiasing;
-		PlayState.instance.spriteMap.set(tag, dolly);
-		dolly.active = true;
-
-		return dolly;
-	}
-
-	function adicionar(tag:String) {
-		if (PlayState.instance.spriteMap.exists(tag)) {
-			var pepsi:SpriteInstantania = PlayState.instance.spriteMap.get(tag);
-			if (!pepsi.foiAdicionada) {
-				PlayState.instance.add(pepsi);
-				pepsi.foiAdicionada = true;
-			}
-		}
-	}
-
-	function remover(tag:String) {
-		if (PlayState.instance.spriteMap.exists(tag)) {
-			var pepsi:SpriteInstantania = PlayState.instance.spriteMap.get(tag);
-			if (!pepsi.foiAdicionada) {
-				pepsi.kill();
-				pepsi.foiAdicionada = false;
-			}
-		}
-	}
-
-	function resetarTagDeSprite(tag:String) {
-		if (!PlayState.instance.spriteMap.exists(tag)) {
-			return;
-		}
-
-		var interessante:SpriteInstantania = PlayState.instance.spriteMap.get(tag);
-		interessante.kill();
-		if (interessante.foiAdicionada) {
-			PlayState.instance.remove(interessante, true);
-		}
-		interessante.destroy();
-		PlayState.instance.spriteMap.remove(tag);
-	}
-
-	function momentoAmendoim(name:String):SpriteInstantania {
-		return PlayState.instance.spriteMap.exists(name) ? PlayState.instance.spriteMap.get(name) : Reflect.getProperty(PlayState.instance, name);
-	}
-
-	function mudarEstacao(estacao:String) {
+	function mudarEstacao(estacao:String, estacaoNum:Int) {
 		mudandoEstacao = true;
 
 		var transicao:SpriteDeFundo = new SpriteDeFundo('$pasta/$estacao/transicao', 0, -1000);
@@ -484,7 +453,7 @@ class PlayState extends MusicBeatState {
 					oaoaoaoaoaoa.screenCenter();
 					oaoaoaoaoaoa.setGraphicSize(FlxG.width, FlxG.height);
 					grupoPlanoDeFundo.add(oaoaoaoaoaoa);
-
+		
 					adicionarShadersDeCamera('principal2', ondaDeCalor = new Ondas());
 					ondaDeCalor.waveAmplitude = 0.1;
 					ondaDeCalor.waveFrequency = 1;
@@ -557,14 +526,25 @@ class PlayState extends MusicBeatState {
 			grupoPlanoDeFundo2.add(sol);
 
 			for (i in 0...2) {
-				grupoPlanoDeFundo2.add(adicionarImagemComRetorno('passaro' + i, '$pasta/geral/passaro', 0, (FlxG.height / 4) + (10 + solA), true));
-				momentoAmendoim('passaro' + i).scale.set(0.25, 0.25);
-				momentoAmendoim('passaro' + i).updateHitbox();
+				grupoPlanoDeFundo2.add(Org.adicionarImagemComRetorno('passaro' + i, '$pasta/geral/passaro', 0, (FlxG.height / 4) + (10 + solA), true));
+				Org.editarSprite('passaro' + i).scale.set(0.25, 0.25);
+				Org.editarSprite('passaro' + i).updateHitbox();
 				if (i > -1 && i > 0) {
-					momentoAmendoim('passaro' + i).x += momentoAmendoim('passaro' + i).width * i + 10;
-					momentoAmendoim('passaro' + i).y += momentoAmendoim('passaro' + i).height * i + 10;
+					Org.editarSprite('passaro' + i).x += Org.editarSprite('passaro' + i).width * i + 10;
+					Org.editarSprite('passaro' + i).y += Org.editarSprite('passaro' + i).height * i + 10;
 				}
 			}
+		});
+		new FlxTimer().start(3, function(tmr:FlxTimer) {
+			grupoTexto.add(Org.adicionarPalavrasComRetorno('descrição', 0, 0, FlxG.width, descricoes[estacaoNum], 16));
+			Org.editarTexto('descrição').setFormat(AssetPaths.font("Days.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			Org.editarTexto('descrição').updateHitbox();
+			Org.editarTexto('descrição').screenCenter();
+			Org.editarTexto('descrição').y += Org.editarTexto('descrição').height;
+			grupoTexto.forEachAlive(function(texto:FlxTextConectado) {
+				if (texto != null/* && texto.alpha == 0*/)
+					FlxTween.tween(texto, {alpha: 1}, 1, {ease: FlxEase.quartInOut});
+			});
 		});
 		Utilidades.mudarMusica(AssetPaths.music(estacao), true, true);
 		mudandoEstacao = false;
@@ -578,18 +558,28 @@ class PlayState extends MusicBeatState {
 			grupoPlanoDeFundo2.forEachAlive(function(sprite:FlxSprite) {
 				FlxTween.tween(sprite, {alpha: 0}, 1, {ease: FlxEase.quartInOut});
 			});
+			grupoTexto.forEachAlive(function(texto:FlxTextConectado) {
+				FlxTween.tween(texto, {alpha: 0}, 1, {ease: FlxEase.quartInOut});
+			});
 			new FlxTimer().start(2, function(tmr:FlxTimer) {
 				grupoPlanoDeFundo.clear();
 				if (grupoParticulas.length > -1 && grupoParticulas.length > 0)
 					grupoParticulas.clear();
 				grupoPlanoDeFundo2.clear();
+				grupoTexto.clear();
 			});
 			pasta = "creditos";
 		} else {
+			grupoTexto.forEachAlive(function(texto:FlxTextConectado) {
+				FlxTween.tween(texto, {alpha: 0}, 1, {ease: FlxEase.quartInOut});
+			});
 			grupoPlanoDeFundo.clear();
 			if (grupoParticulas.length > -1 && grupoParticulas.length > 0)
 				grupoParticulas.clear();
 			grupoPlanoDeFundo2.clear();
+			new FlxTimer().start(2, function(tmr:FlxTimer) {
+				grupoTexto.clear();
+			});
 		}
 	}
 }

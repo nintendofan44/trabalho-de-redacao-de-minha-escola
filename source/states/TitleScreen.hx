@@ -53,7 +53,7 @@ class TitleScreen extends MusicBeatState {
         trace(state);
 
 		for (i in 0...musicaParaCachear.length) { // me mata
-			if (musicaParaCachear[i][1] == "noLib")
+			if (musicaParaCachear[i][1] == "semLib")
 				FlxG.sound.cache(AssetPaths.music(musicaParaCachear[i][0]));
 			else
 				FlxG.sound.cache(AssetPaths.music(musicaParaCachear[i][0], musicaParaCachear[i][1]));
@@ -134,9 +134,14 @@ class TitleScreen extends MusicBeatState {
         if (enableCamScroll)
             FlxG.camera.follow(camFollowPos, null, 1);
 
+        //FlxG.camera.zoom = 3;
+        //FlxG.camera.angle = 179;
+
         changeItem();
 
 		super.create();
+
+        //FlxTween.tween(FlxG.camera, {zoom: 1, angle: 0}, 1.1, {ease: FlxEase.expoInOut});
 	}
 
     var canClick:Bool = true;
@@ -260,6 +265,7 @@ class TitleScreen extends MusicBeatState {
 		switch (stateToGo)
 		{
 			case 'playButton':
+                FlxTween.tween(FlxG.camera, {zoom: 3, angle: 179}, 1.1, {ease: FlxEase.expoInOut});
 				MusicBeatState.switchState(new PlayState());
             case 'exit':
 				Sys.exit(0);

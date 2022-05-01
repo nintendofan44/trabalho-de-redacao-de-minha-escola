@@ -1,5 +1,6 @@
 package ajudas;
 
+import objetos.FlxTextConectado;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import base.Conductor;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -85,17 +86,5 @@ class Utilidades
 		}
 		var newValue:Float = Math.floor(value * tempMult);
 		return newValue / tempMult;
-	}
-}
-
-class SpriteInstantania extends FlxSprite
-{
-	public var foiAdicionada:Bool = false;
-	//public var isInFront:Bool = false;
-
-	public function new(?x:Float = 0, ?y:Float = 0, _antialiasing:Bool)
-	{
-		super(x, y);
-		antialiasing = _antialiasing;
 	}
 }
